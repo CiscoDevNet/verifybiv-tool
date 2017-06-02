@@ -52,7 +52,7 @@ Use [pip](http://pip-installer.org):
 
     pip install pycrypto
 
-_NOTE:_ On Windows, change pycrpto's folder name from crypto to Crypto.
+_NOTE:_ On Windows, change pycrypto's folder name from crypto to Crypto.
 
 ### __docopt__ <http://docopt.org/> ###
 Use [pip](http://pip-installer.org):
@@ -154,7 +154,7 @@ Cisco Community forum coming soon.
 
 ## Getting involved
 
-This script is provided as a reference for how to perform verfication of
+This script is provided as a reference for how to perform verification of
 signed BIV command output. The intent is for others to explore the BIV feature
 on supported network devices and adapt this verification method to their needs.
 
