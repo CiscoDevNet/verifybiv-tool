@@ -211,6 +211,23 @@ def verify_show_platform_sudi(**kwargs):
     return sig_verifier.verify(data_binary_hash, sig_binary) or \
             sig_verifier.verify(data_binary_hash_old, sig_binary)
 
+def get_expected_pcr_value(hash_list):
+    '''Given a list of hash strings, calculate the expected PCR values
+
+    For PCR0, extend by the Boot 0 hash and then the Boot Loader Hash
+    For PCR8, extend by the OS hash
+
+    Returns the calculated PCR value'''
+
+    pcr_init = "0000000000000000000000000000000000000000000000000000000000000000"
+    pcr_bin = binascii.a2b_hex(pcr_init)
+    for hash_str in hash_list:
+        hash_bin = binascii.a2b_hex(hash_str)
+        hash_sha256_bin = SHA256.new(hash_bin).digest()
+        pcr_bin = SHA256.new(pcr_bin + hash_sha256_bin).digest()
+
+    return binascii.b2a_hex(pcr_bin).upper()
+
 
 def verify_show_platform_integrity(**kwargs):
     '''Validate the signed output of the ``show platform integrity sign (nonce
@@ -249,6 +266,12 @@ def verify_show_platform_integrity(**kwargs):
         r'(?P<signature>[0-9A-F]{512})'
         )
 
+    hash_dict = {
+        'output_ver1_boot0_hash_pat':    r'Boot 0 Hash:\s+(?P<boot0hash>[0-9A-F]+)\s+',
+        'output_ver1_bootldr_hash_pat':  r'Boot Loader Hash:\s+(?P<bootldrhash>[0-9A-F]+)\s+',
+        'output_ver1_os_hash_pat':       r'OS Hash:\s+(?P<oshash>[0-9A-F]+)\s+'
+    }
+
     # Parse output with sanity checks
 
     cert_pem_body_list = extract_pem_cert_bodies(kwargs['show_sudi_cert'])
@@ -262,6 +285,20 @@ def verify_show_platform_integrity(**kwargs):
     assert match is not None, \
             "Unable to find PCR registers and Signature version 1 pattern in output"
 
+    hash_dict['match_boot0_hash'] = re.search(
+        hash_dict['output_ver1_boot0_hash_pat'], kwargs['output'], re.M)
+    assert hash_dict['match_boot0_hash'] is not None, \
+            "Unable to find Boot 0 Hash pattern in output"
+
+    hash_dict['match_bootldr_hash'] = re.search(
+        hash_dict['output_ver1_bootldr_hash_pat'], kwargs['output'], re.M)
+    assert hash_dict['match_bootldr_hash'] is not None, \
+            "Unable to find Boot Loader Hash pattern in output"
+
+    hash_dict['match_os_hash'] = re.search(
+        hash_dict['output_ver1_os_hash_pat'], kwargs['output'], re.M)
+    assert hash_dict['match_os_hash'] is not None, \
+            "Unable to find OS Hash pattern in output"
 
     # Build binary data for verification
     sig_binary = binascii.a2b_hex(match.group('signature'))
@@ -277,6 +314,21 @@ def verify_show_platform_integrity(**kwargs):
         data_binary = nonce_binary + sigver_binary
     else:
         data_binary = sigver_binary
+
+    expected_pcr0 = get_expected_pcr_value([
+        hash_dict['match_boot0_hash'].group('boot0hash'),
+        hash_dict['match_bootldr_hash'].group('bootldrhash')])
+
+    expected_pcr8 = get_expected_pcr_value([
+        hash_dict['match_os_hash'].group('oshash')])
+
+    assert expected_pcr0 == match.group('pcr0'), \
+            "PCR0 does not match expected value of:\n{0}".format(expected_pcr0)
+    assert expected_pcr8 == match.group('pcr8'), \
+            "PCR8 does not match expected value of:\n{0}".format(expected_pcr8)
+
+    #print "expected_pcr0:  " + expected_pcr0
+    #print "expected_pcr8:  " + expected_pcr8
 
     # PCR register hashes
     pcr0_binary = binascii.a2b_hex(match.group('pcr0'))
