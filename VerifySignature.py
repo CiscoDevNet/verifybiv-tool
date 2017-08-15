@@ -224,7 +224,9 @@ def get_expected_pcr_value(hash_list):
     for hash_str in hash_list:
         hash_bin = binascii.a2b_hex(hash_str)
         hash_sha256_bin = SHA256.new(hash_bin).digest()
+        #print "cur_256 " + binascii.b2a_hex(hash_sha256_bin)
         pcr_bin = SHA256.new(pcr_bin + hash_sha256_bin).digest()
+        #print "cur_pcr " + binascii.b2a_hex(pcr_bin).upper()
 
     return binascii.b2a_hex(pcr_bin).upper()
 
