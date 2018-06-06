@@ -1,0 +1,100 @@
+
+THIS TOOL IS FOR REFERENCE ONLY!
+
+This tarball contains a python script, sample input file and this README file
+for validating the SUDI Certificate Chain, the SUDI Serial Number and the 
+Proof of Possession for the private key.
+
+###############################################
+#
+# File Name: device_validation.py
+#
+# Version: v1.1
+#
+# Author: Bill Hudson
+#
+# Sample Device Validation Script
+#
+# THIS SCRIPT IS FOR REFERENCE PURPOSES ONLY!
+# THIS SCRIPT IS FOR REFERENCE PURPOSES ONLY!
+# THIS SCRIPT IS FOR REFERENCE PURPOSES ONLY!
+#
+# Purpose: Reference model for validating the
+#      Secure Identity and Proof of Possession
+#      of the private key for a given device.
+#      This script supports two methods to execute
+#      the validations: PNP API and CLI.
+#
+# Requirements:
+#   PNP API:
+#      For PNP API method to work properly
+#      the device must have the PNP listener enabled.
+#   Assumption: The PNP API crednetials match the
+#      SSH login credntials.
+#
+#   CLI:
+#      For the CLI method to work properly the
+#      device must support the 'show platform sudi...'
+#      command (currently only in S-train).
+#
+# Input (devices.csv):
+#   A comma seperated file (csv) is used for input to
+#   determine which devices are to be examined. Each
+#   record in the file must contain at least 4 or 5 fields:
+#      For PNP:
+#       - ip address of device
+#       - method ("PNP" or "CLI")
+#       - admin user id
+#       - admin password
+#       - UDI (optional)
+#       - SUDI serial (optional)
+#
+#      For CLI:
+#       - ip address of device
+#       - method ("PNP" or "CLI")
+#       - admin user id
+#       - admin password
+#       - enable password
+#       - SUDI serial (optional)
+#
+#   For the optional fields, if they are missing, the
+#   script will retrieve those data items from the device.
+#   The retrieved values will be written out to the output file.
+#
+# Output (devices.csv, devices.old.csv <-- original input file):
+#   An output file is created and overwrites the existing input file.
+#   The new output file will contain any data that was collected from the
+#   device which was missing prior (UDI, SUDI Serial).
+#   The original input file will be renamed as .old.csv to keep for reference.
+#
+# Usage:
+#   To validate all the devices listed in the input file:
+#      ./device_validation.py
+#
+#   To validate a single device in the input file:
+#      ./device_validation.py <ip address>
+#
+# Dependencies:
+#   The python dependencies are as follows:
+#        os, csv, requests, base64, string, random, struct
+#        argparse, pexpect, binascii, xml.etree, OpenSSL, six
+#   If any of these packages are missing, use your python package
+#   installer to install them on your system.
+#   This script was tested against python 2.7. Any other version is
+#   untested and may not work as expected.
+#
+# Disclaimer:
+#   This script is a demo tool and is unsupported. No guarantees or warranties
+#   are implied. A modest effort was made to error check the various steps
+#   but there are no guarantees that all error scenarios have been covered.
+#
+# Change Log:
+#   V1.1 - added Product ID(PID) checking
+#
+# Copyright 2016 Cisco Systems, Inc. All Rights Reserved
+#
+###############################################
+
+
+THIS TOOL IS FOR REFERENCE ONLY!
+

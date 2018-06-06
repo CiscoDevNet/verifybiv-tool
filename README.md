@@ -146,10 +146,15 @@ Verifying platform integrity signature...
 
 *Certificate validation*
 
-The chain of certificates within the device `show platform sudi certificate`
+The chain of certificates within the device ``show platform sudi certificate``
 PEM stack output can be validated with openssl or a similar tool against 
 the appropriate Cisco CA certificates available at 
 the [Cisco PKI Index](https://www.cisco.com/security/pki/)
+
+There is a convenience script in the ``device_validation`` subdirectory for
+validating the SUDI Certificate Chain, the SUDI Serial Number, and the Proof of
+Possession for the device private key. See the corresponding
+[README](device_validation/README) file for details.
 
 ## Getting help
 
