@@ -1,9 +1,9 @@
 
 THIS TOOL IS FOR REFERENCE ONLY!
 
-This tarball contains a python script, sample input file and this README file
-for validating the SUDI Certificate Chain, the SUDI Serial Number and the 
-Proof of Possession for the private key.
+README file for validating the SUDI Certificate Chain, the SUDI Serial Number
+and the Proof of Possession for the private key with the supplied python
+script.
 
 ###############################################
 #
