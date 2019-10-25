@@ -299,7 +299,22 @@ def verify_show_platform_integrity(**kwargs):
 
     hash_dict['match_os_hash'] = re.search(
         hash_dict['output_ver1_os_hash_pat'], kwargs['output'], re.M)
-    assert hash_dict['match_os_hash'] is not None, \
+
+    os_hashes = None
+
+    if hash_dict['match_os_hash'] is None:
+        hashes = kwargs['output']
+        os_hashes_header = hashes.find("OS Hashes:")
+        if os_hashes_header != -1:
+            hashes = hashes[os_hashes_header + 11:]
+            pcr0 = hashes.find("PCR0:")
+            if pcr0 != -1:
+                os_hashes_entries = hashes[: pcr0 - 1].split("\n")
+                os_hashes = [ entry.split(' ')[1] for entry in os_hashes_entries ]
+    else:
+        os_hashes = [hash_dict['match_os_hash'].group('oshash')]
+
+    assert os_hashes is not None, \
             "Unable to find OS Hash pattern in output"
 
     # Build binary data for verification
@@ -321,8 +336,7 @@ def verify_show_platform_integrity(**kwargs):
         hash_dict['match_boot0_hash'].group('boot0hash'),
         hash_dict['match_bootldr_hash'].group('bootldrhash')])
 
-    expected_pcr8 = get_expected_pcr_value([
-        hash_dict['match_os_hash'].group('oshash')])
+    expected_pcr8 = get_expected_pcr_value(os_hashes)
 
     assert expected_pcr0 == match.group('pcr0'), \
             "PCR0 does not match expected value of:\n{0}".format(expected_pcr0)
